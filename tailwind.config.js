@@ -4,8 +4,13 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily:{
+        custom: ['Rubik', 'sans-serif']
+      }
+    },
   },
   plugins: [],
 }
+
 
