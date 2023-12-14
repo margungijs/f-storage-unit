@@ -14,6 +14,12 @@ import Company  from './components/Company';
 import PdfGeneration from "./components/PDFGeneration";
 
 function App() {
+  const isLoggedIn = localStorage.getItem('token');
+
+  const ProtectedRoute = ({ element, ...props }) => {
+        return isLoggedIn ? element : <Navigate to="/" replace />;
+  };
+  
   return (
     <Router>
       <Header />
@@ -22,9 +28,15 @@ function App() {
         <Route path = "/UserOutput" element = {<UserOutput />}/>
         <Route path = "/UserEdit" element = {<UserEdit />}/>
         <Route path="/" element={<Login />} />
-        <Route path="/insert-goods" element={<InsertGoods />} />
-        <Route path="/goodsinfo" element={<GoodsInfo />} />
-        <Route path="/goodsEdit/:id" element={<GoodsEdit />} />
+        <Route
+             path="/insert-goods"
+             element={<ProtectedRoute element={<InsertGoods />} />}
+        />
+        <Route path="/goodsinfo" element={<ProtectedRoute element={<GoodsInfo />} />} />
+        <Route
+             path="/goodsEdit/:id"
+             element={<ProtectedRoute element={<GoodsEdit />} />}
+        />
         <Route path = "/PDF" element = {<PdfGeneration />}/>
       </Routes>
     </Router>
