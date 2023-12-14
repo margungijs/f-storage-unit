@@ -52,10 +52,12 @@ const Login = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Login successful:', data);
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('role', data.role);
-                // You can handle the successful login, e.g., store the token in local storage and redirect to another page
-                navigate('/goodsinfo');
+                if(data.token){
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.role);
+                    // You can handle the successful login, e.g., store the token in local storage and redirect to another page
+                    navigate('/goodsinfo');
+                }
             } else {
                 // Handle login failure
                 const errorData = await response.json();
