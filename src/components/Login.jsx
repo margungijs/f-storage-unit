@@ -1,6 +1,5 @@
-// src/Login.js
 import React, { useState, useEffect } from 'react';
-import {Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -10,25 +9,7 @@ const Login = () => {
     const [showSidebar, setShowSidebar] = useState(true);
     const navigate = useNavigate();
 
-    // Use useEffect to update showSidebar state based on screen width
-    useEffect(() => {
-        const handleResize = () => {
-            setShowSidebar(window.innerWidth > 640); // Adjust the width breakpoint as needed
-        };
-
-        // Initial check on mount
-        handleResize();
-
-        // Event listener for window resize
-        window.addEventListener('resize', handleResize);
-
-        // Cleanup the event listener on component unmount
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    const handleLogin = () => {
+    const handleLogin = async () => {
         // Simple front-end validations
         let hasError = false;
 
@@ -51,11 +32,50 @@ const Login = () => {
             return;
         }
 
-        // Add your login logic here (backend validation can be added as well)
-        console.log('Logging in...', { username, password });
+        try {
+            // Prepare the data to be sent to Laravel
+            const loginData = {
+                name: username,
+                password: password,
+            };
 
-        navigate('/goodsinfo')
+            // Make a POST request to the Laravel login endpoint
+            const response = await fetch('http://localhost/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(loginData),
+            });
+
+            // Handle the response
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Login successful:', data);
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('role', data.role);
+                // You can handle the successful login, e.g., store the token in local storage and redirect to another page
+                navigate('/goodsinfo');
+            } else {
+                // Handle login failure
+                const errorData = await response.json();
+
+                if (response.status === 401 && errorData.name === 'Username not found') {
+                    setUsernameError('Username not found.');
+                } else if (response.status === 401 && errorData.password === 'Password incorrect') {
+                    setPasswordError('Password incorrect.');
+                } else {
+                    console.error('Login failed:', errorData);
+                    // Update state or show an error message to the user
+                }
+            }
+        } catch (error) {
+            console.error('Error sending login request:', error.message);
+            // Handle other errors, e.g., network issues
+        }
     };
+
+    // ... (other component code)
 
     return (
         <div className="flex items-center justify-center h-screen bg-white">

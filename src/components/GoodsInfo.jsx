@@ -1,19 +1,30 @@
-// GoodsOutput.js
-import React, { useState } from 'react';
-import {Link} from "react-router-dom";
-
-const dummyGoods = [
-    { id: 1, name: 'Bleach', description: 'chemical product that is used industrially or domestically to remove colour (whitening) from fabric or fiber (in a process called bleaching) or to disinfect after cleaning', price: 20.99 },
-    { id: 2, name: 'Jew', description: 'a member of the people and cultural community whose traditional religion is Judaism and who trace their origins through the ancient Hebrew people of Israel to Abraham.', price: 15.49 },
-    { id: 3, name: 'Iphone 15', description: 'Cool phone', price: 1200.99 },
-    { id: 4, name: 'Iphone 15', description: '', price: 1200.99 },
-];
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { PencilIcon } from '@heroicons/react/solid'; // Import the PencilIcon from Heroicons
+import axios from 'axios';
 
 const GoodsOutput = () => {
+    const [goods, setGoods] = useState([]);
     const [selectedGood, setSelectedGood] = useState(null);
-    const [sortedGoods, setSortedGoods] = useState(dummyGoods);
+    const [sortedGoods, setSortedGoods] = useState([]);
     const [selectedSort, setSelectedSort] = useState('none');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost/api/getProducts');
+                console.log('API Response:', response.data);
+                setGoods(response.data);
+                setSortedGoods(response.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const handleMoreInfo = (good) => {
         setSelectedGood(good);
@@ -23,24 +34,34 @@ const GoodsOutput = () => {
         setSelectedGood(null);
     };
 
+    const handleEdit = (good) => {
+        if (good) {
+            const productId = good.id;
+            navigate(`/goodsEdit/${productId}`);
+        }
+    };
+
     const handleSort = (criteria) => {
         let sorted;
 
         switch (criteria) {
             case 'mostExpensive':
-                sorted = [...dummyGoods].sort((a, b) => b.price - a.price);
+                sorted = [...goods].sort((a, b) => b.price - a.price);
                 break;
             case 'leastExpensive':
-                sorted = [...dummyGoods].sort((a, b) => a.price - b.price);
+                sorted = [...goods].sort((a, b) => a.price - b.price);
                 break;
             case 'aToZ':
-                sorted = [...dummyGoods].sort((a, b) => a.name.localeCompare(b.name));
+                sorted = [...goods].sort((a, b) => a.name.localeCompare(b.name));
                 break;
             case 'zToA':
-                sorted = [...dummyGoods].sort((a, b) => b.name.localeCompare(a.name));
+                sorted = [...goods].sort((a, b) => b.name.localeCompare(a.name));
                 break;
+            case 'edit':
+                handleEdit(selectedGood);
+                return;
             default:
-                sorted = dummyGoods;
+                sorted = goods;
         }
 
         setSortedGoods(sorted);
@@ -74,10 +95,7 @@ const GoodsOutput = () => {
                             fill="currentColor"
                             aria-hidden="true"
                         >
-                            <path
-                                fillRule="evenodd"
-                                d="M10 15l-5-5 5-5 5 5-5 5z"
-                            />
+                            <path fillRule="evenodd" d="M10 15l-5-5 5-5 5 5-5 5z" />
                         </svg>
                     </button>
                     {isDropdownOpen && (
@@ -111,6 +129,13 @@ const GoodsOutput = () => {
                                 >
                                     Z-A
                                 </button>
+                                <button
+                                    onClick={() => handleSort('edit')}
+                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left"
+                                    role="menuitem"
+                                >
+                                    Edit
+                                </button>
                             </div>
                         </div>
                     )}
@@ -121,13 +146,25 @@ const GoodsOutput = () => {
                 {sortedGoods.map((good) => (
                     <div key={good.id} className="bg-white p-4 rounded-md shadow-md">
                         <h3 className="text-lg font-semibold mb-2">{good.name}</h3>
-                        <p className="text-green-500 font-bold">${good.price.toFixed(2)}</p>
+                        {good.price !== null && !isNaN(good.price) ? (
+                            <p className="text-green-500 font-bold">${Number(good.price).toFixed(2)}</p>
+                        ) : (
+                            <p className="text-red-500">Invalid price</p>
+                        )}
                         <button
                             className="text-blue-500 hover:underline focus:outline-none"
                             onClick={() => handleMoreInfo(good)}
                         >
                             More Info
                         </button>
+                        {selectedGood && selectedGood.id === good.id && (
+                            <button
+                                className="text-blue-500 hover:underline focus:outline-none"
+                                onClick={() => handleEdit(good)}
+                            >
+                                <PencilIcon className="h-5 w-5" />
+                            </button>
+                        )}
                     </div>
                 ))}
             </div>
@@ -136,17 +173,30 @@ const GoodsOutput = () => {
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-md shadow-md max-w-md p-8">
                         <h2 className="text-2xl font-bold mb-4">{selectedGood.name}</h2>
-                        <p className="text-green-500 font-bold mb-4">${selectedGood.price.toFixed(2)}</p>
+                        {selectedGood.price !== null && !isNaN(selectedGood.price) ? (
+                            <p className="text-green-500 font-bold">${Number(selectedGood.price).toFixed(2)}</p>
+                        ) : (
+                            <p className="text-red-500">Invalid price</p>
+                        )}
                         <p className="text-gray-600 mb-4">{selectedGood.description}</p>
-                        <button
-                            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-400 transition-all duration-300"
-                            onClick={handleClose}
-                        >
-                            Close
-                        </button>
+                        <div className="flex space-x-4">
+                            <button
+                                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-400 transition-all duration-300"
+                                onClick={handleClose}
+                            >
+                                Close
+                            </button>
+                            <button
+                                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-400 transition-all duration-300"
+                                onClick={handleEdit}
+                            >
+                                <PencilIcon className="h-5 w-5" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
+
             <footer className="flex justify-center mt-4">
                 <Link to="/insert-goods">
                     <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-400 transition-all duration-300">
