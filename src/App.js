@@ -1,8 +1,12 @@
 import './App.css';
+import TabComponent from './components/Tab';
+import Company  from './components/Company';
 
 function App() {
   return (
-    <div className="bg-purple-400">
+    <div className="">
+        <Company/>
+         <TabComponent/>
 
     </div>
   );
