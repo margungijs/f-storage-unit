@@ -13,7 +13,6 @@ function App() {
         <Route path = "/UserAdd" element = {<UserAdd />}/>
         <Route path = "/UserOutput" element = {<UserOutput />}/>
         <Route path = "/UserEdit" element = {<UserEdit />}/>
-         
       </Routes>
     </Router>
   );
