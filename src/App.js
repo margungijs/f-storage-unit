@@ -11,10 +11,12 @@ import UserOutput from "./components/UserOutput";
 import UserEdit from "./components/UserEdit";
 import TabComponent from './components/Tab';
 import Company  from './components/Company';
+import PdfGeneration from "./components/PDFGeneration";
 
 function App() {
   return (
     <Router>
+      <Header />
       <Routes>
         <Route path = "/UserAdd" element = {<UserAdd />}/>
         <Route path = "/UserOutput" element = {<UserOutput />}/>
@@ -23,6 +25,7 @@ function App() {
         <Route path="/insert-goods" element={<InsertGoods />} />
         <Route path="/goodsinfo" element={<GoodsInfo />} />
         <Route path="/goodsEdit/:id" element={<GoodsEdit />} />
+        <Route path = "/PDF" element = {<PdfGeneration />}/>
       </Routes>
     </Router>
   );
