@@ -6,7 +6,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 const GoodsEdit = () => {
     const { id } = useParams();
     const [productName, setProductName] = useState('');
-    const [productCategory, setProductCategory] = useState('');
     const [productDescription, setProductDescription] = useState('');
     const [price, setPrice] = useState('');
 
@@ -16,7 +15,6 @@ const GoodsEdit = () => {
             .then(response => response.json())
             .then(data => {
                 setProductName(data.name);
-                setProductCategory(data.category);
                 setProductDescription(data.description);
                 setPrice(data.price.toString()); // Assuming price is a number
             })
@@ -29,7 +27,6 @@ const GoodsEdit = () => {
         // Prepare the data to be sent to Laravel
         const data = {
             name: productName,
-            category: productCategory,
             description: productDescription,
             price: parseFloat(price), // Assuming price is a number
         };
@@ -69,18 +66,6 @@ const GoodsEdit = () => {
                             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-500"
                             value={productName}
                             onChange={(e) => setProductName(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="category" className="block text-gray-600 text-sm font-medium mb-2">
-                            Category
-                        </label>
-                        <input
-                            type="text"
-                            id="category"
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-500"
-                            value={productCategory}
-                            onChange={(e) => setProductCategory(e.target.value)}
                         />
                     </div>
                     <div className="mb-4">
