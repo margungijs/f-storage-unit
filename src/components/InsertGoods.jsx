@@ -3,13 +3,11 @@ import {useNavigate} from "react-router-dom";
 
 const GoodsInsert = () => {
     const [productName, setProductName] = useState('');
-    const [productCategory, setProductCategory] = useState('');
     const [productDescription, setProductDescription] = useState('');
     const [price, setPrice] = useState('');
     const navigate = useNavigate();
     const [formErrors, setFormErrors] = useState({
         productName: '',
-        productCategory: '',
         productDescription: '',
         price: '',
     });
@@ -20,10 +18,6 @@ const GoodsInsert = () => {
 
         if (!productName.trim()) {
             errors.productName = 'Product Name is required.';
-        }
-
-        if (!productCategory.trim()) {
-            errors.productCategory = 'Category is required.';
         }
 
         if (!productDescription.trim()) {
@@ -46,7 +40,6 @@ const GoodsInsert = () => {
         // If no errors, prepare the data to be sent to Laravel
         const data = {
             name: productName,
-            category: productCategory,
             description: productDescription,
             price: parseFloat(price), // Assuming price is a number
         };
@@ -89,22 +82,6 @@ const GoodsInsert = () => {
                         />
                         {formErrors.productName && (
                             <p className="text-red-500 mt-2">{formErrors.productName}</p>
-                        )}
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="category" className="block text-gray-600 text-sm font-medium mb-2">
-                            Category
-                        </label>
-                        <input
-                            type="text"
-                            id="category"
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-500 ${
-                                formErrors.productCategory ? 'border-red-500' : ''
-                            }`}
-                            onChange={(e) => setProductCategory(e.target.value)}
-                        />
-                        {formErrors.productCategory && (
-                            <p className="text-red-500 mt-2">{formErrors.productCategory}</p>
                         )}
                     </div>
                     <div className="mb-4">
