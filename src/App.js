@@ -1,13 +1,15 @@
 import './App.css';
 import TabComponent from './components/Tab';
 import Company  from './components/Company';
-
+import Orders from "./components/Order.";
+import Delivery from "./components/Delivery";
 function App() {
   return (
     <div className="">
-        <Company/>
-         <TabComponent/>
-
+         {/*<Company/>*/}
+        {/* <TabComponent/>*/}
+        {/*<Orders/>*/}
+        <Delivery/>
     </div>
   );
 }

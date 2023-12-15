@@ -4,19 +4,28 @@ const TabComponent = () => {
   const [formData, setFormData] = useState({
     product: '',
     orderCompany: '',
+    quantity: '',
   });
 
   const [validationErrors, setValidationErrors] = useState({
     product: '',
     orderCompany: '',
+    quantity: '',
   });
 
   const [submissionStatus, setSubmissionStatus] = useState('');
   const [companyOptions, setCompanyOptions] = useState([]);
 
   const handleChange = (field, value) => {
-    setFormData({ ...formData, [field]: value.trim() });
-    setValidationErrors({ ...validationErrors, [field]: '' });
+    if (field === 'quantity' && !/^\d*$/.test(value)) {
+      setValidationErrors({
+        ...validationErrors,
+        [field]: 'Please enter a valid quantity (numeric characters only).',
+      });
+    } else {
+      setFormData({ ...formData, [field]: value.trim() });
+      setValidationErrors({ ...validationErrors, [field]: '' });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -32,7 +41,9 @@ const TabComponent = () => {
     if (Object.keys(errors).length > 0) {
       const escapedErrors = {};
       Object.keys(errors).forEach((field) => {
-        escapedErrors[field] = errors[field].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        escapedErrors[field] = errors[field]
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
       });
       setValidationErrors(escapedErrors);
       setSubmissionStatus('');
@@ -47,6 +58,7 @@ const TabComponent = () => {
           body: JSON.stringify({
             product: formData.product,
             orderCompany: formData.orderCompany,
+            quantity: formData.quantity,
           }),
         });
 
@@ -55,6 +67,7 @@ const TabComponent = () => {
           setFormData({
             product: '',
             orderCompany: '',
+            quantity: '',
           });
 
           setSubmissionStatus('Form submitted successfully!');
@@ -106,7 +119,10 @@ const TabComponent = () => {
                 value={formData.product}
             />
             {validationErrors.product && (
-                <p className="text-red-500" dangerouslySetInnerHTML={{ __html: validationErrors.product }} />
+                <p
+                    className="text-red-500"
+                    dangerouslySetInnerHTML={{ __html: validationErrors.product }}
+                />
             )}
           </div>
 
@@ -126,11 +142,32 @@ const TabComponent = () => {
               ))}
             </select>
             {validationErrors.orderCompany && (
-                <p className="text-red-500" dangerouslySetInnerHTML={{ __html: validationErrors.orderCompany }} />
+                <p
+                    className="text-red-500"
+                    dangerouslySetInnerHTML={{ __html: validationErrors.orderCompany }}
+                />
             )}
           </div>
 
-          {submissionStatus && <p className="text-green-500">{submissionStatus}</p>}
+          {/* Quantity */}
+          <div className="w-full mb-6">
+            <label className="block font-bold text-gray-700">Quantity</label>
+            <input
+                className="form-control w-full px-6 py-4 border border-green-500 rounded-md focus:outline-none focus:border-green-600"
+                onChange={(e) => handleChange('quantity', e.target.value)}
+                value={formData.quantity}
+            />
+            {validationErrors.quantity && (
+                <p
+                    className="text-red-500"
+                    dangerouslySetInnerHTML={{ __html: validationErrors.quantity }}
+                />
+            )}
+          </div>
+
+          {submissionStatus && (
+              <p className="text-green-500">{submissionStatus}</p>
+          )}
           <button
               className="bg-green-500 text-white px-6 py-4 rounded-md transition-transform transform hover:bg-green-600 hover:scale-110 hover:transition-transform"
               type="submit"
