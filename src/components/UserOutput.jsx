@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import UserEdit from "./UserEdit";
 import UserDelete from "./UserDelete";
 import SuccessMessage from "./SuccessMessage";
+import {Link} from "react-router-dom";
 
 const UserOutput = () => {
     const [users, setUsers] = useState([]);
@@ -68,7 +69,10 @@ const UserOutput = () => {
     console.log(editingUser);
 
     return (
-        <div>
+        <div className = "bg-gray-200">
+            <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-400 transition-all duration-300 m-5">
+                <Link to = "/UserAdd">Add User</Link>
+            </button>
             {isEdit && <UserEdit user={editingUser} close={handleCloseEdit} />}
             {isDelete && <UserDelete user={deletedUser} close={handleDeleteClose} />}
             {editSuccess && <SuccessMessage close = {closeSuccess}/>}
