@@ -80,7 +80,7 @@ const TabComponent = () => {
   useEffect(() => {
     const fetchCompanyNames = async () => {
       try {
-        const response = await fetch('http://localhost/storage/selectcompany.php');
+        const response = await fetch('http://localhost:8888//selectcompany.php');
         const data = await response.json();
         setCompanyOptions(data);
       } catch (error) {

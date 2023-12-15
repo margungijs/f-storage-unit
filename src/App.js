@@ -1,6 +1,6 @@
 import './App.css';
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Login.jsx";
 import InsertGoods from "./components/InsertGoods";
 import GoodsInfo from "./components/GoodsInfo";
@@ -24,6 +24,8 @@ function App() {
     <Router>
       <Header />
       <Routes>
+        <Route path = "/Company" element = {<Company />}/>
+        <Route path = "/Tab" element = {<TabComponent />}/>
         <Route path = "/UserAdd" element = {<UserAdd />}/>
         <Route path = "/UserOutput" element = {<UserOutput />}/>
         <Route path = "/UserEdit" element = {<UserEdit />}/>
