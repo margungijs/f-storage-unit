@@ -14,19 +14,6 @@ const GoodsOutput = () => {
     const [imzis, setImzis] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const role = localStorage.getItem('role');
-
-    useEffect(() => {
-        // Check if user is logged in when the component mounts
-        const token = localStorage.getItem('token');
-        setIsLoggedIn(!!token);
-
-        if (!token) {
-            // Redirect or handle unauthorized access
-            navigate('/');
-        } else {
-            fetchData(); // Fetch data only if logged in
-        }
-    }, [imzis, navigate]);
     const fetchData = async () => {
         try {
             const response = await axios.get('http://localhost/api/getProducts');
@@ -173,6 +160,43 @@ const GoodsOutput = () => {
     const closeDropdown = () => {
         setIsDropdownOpen(false);
     };
+    const downloadPDF = async () => {
+        try {
+            const response = await fetch('http://localhost/api/PDFAtskaite', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/pdf',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            // Create a Blob from the PDF data
+            const blob = await response.blob();
+
+            // Create a temporary link element
+            const link = document.createElement('a');
+
+            // Set the href attribute with the Blob data
+            link.href = window.URL.createObjectURL(blob);
+
+            // Set the download attribute with the desired file name
+            link.download = 'example.pdf';
+
+            // Append the link to the document
+            document.body.appendChild(link);
+
+            // Trigger a click on the link to start the download
+            link.click();
+
+            // Remove the link from the document
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Error downloading PDF:', error);
+        }
+    };
 
     return (
         <div className="container mx-auto mt-8">
@@ -181,7 +205,7 @@ const GoodsOutput = () => {
                     <button
                         type="button"
                         onClick={toggleDropdown}
-                        className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                        className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm m-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                     >
                         Sort by: {selectedSort === 'none' ? 'Select' : selectedSort.replace(/([A-Z])/g, ' $1')}
                         <svg
@@ -194,6 +218,19 @@ const GoodsOutput = () => {
                             <path fillRule="evenodd" d="M10 15l-5-5 5-5 5 5-5 5z" />
                         </svg>
                     </button>
+                    <button
+                        className="bg-green-500 font text-white px-4 py-2 rounded-md hover:bg-green-400 transition-all duration-300 m-4"
+                        onClick={downloadPDF}
+                    >
+                        Generate PDF
+                    </button>
+                    { (role == 1 || role == 3) &&
+                        <Link to="/insert-goods">
+                            <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-400 transition-all duration-300 m-4">
+                                Add Product
+                            </button>
+                        </Link>
+                    }
                     {isDropdownOpen && (
                         <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                             <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
@@ -244,6 +281,7 @@ const GoodsOutput = () => {
                                     ) : (
                                         <p className="text-red-500">Invalid price</p>
                                     )}
+                                    {(role == 2 || role == 3) &&
                                     <div className="mt-4 mb-4">
                                         <label className="block text-sm font-medium text-gray-700">Select Category:</label>
                                         <select
@@ -262,6 +300,7 @@ const GoodsOutput = () => {
                                             <option value="Toys and Games">Toys and Games</option>
                                         </select>
                                     </div>
+                                    }
                                     <button
                                         className="text-blue-500 hover:underline focus:outline-none"
                                         onClick={() => handleMoreInfo(good)}
@@ -326,17 +365,6 @@ const GoodsOutput = () => {
                     </div>
                 </div>
             )}
-
-            <footer className="flex justify-center mt-4">
-                { (role == 1 || role == 3) &&
-                    <Link to="/insert-goods">
-                        <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-400 transition-all duration-300">
-                            Add Product
-                        </button>
-                    </Link>
-                }
-
-            </footer>
         </div>
     );
 };

@@ -1,5 +1,3 @@
-// GoodsEdit.jsx
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -8,6 +6,7 @@ const GoodsEdit = () => {
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState('');
     const [price, setPrice] = useState('');
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         // Fetch existing product details when the component mounts
@@ -24,6 +23,31 @@ const GoodsEdit = () => {
     const navigate = useNavigate();
 
     const handleUpdate = () => {
+        // Simple form validation
+        const validationErrors = {};
+        if (!productName.trim()) {
+            validationErrors.productName = 'Product name is required';
+        }
+        if (!productDescription.trim()) {
+            validationErrors.productDescription = 'Product description is required';
+        }
+        if (!price.trim()) {
+            validationErrors.price = 'Price is required';
+        } else if (isNaN(parseFloat(price))) {
+            validationErrors.price = 'Price must be a number';
+        }
+
+        // Check if there are validation errors
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+
+        // Clear any previous validation errors
+        setErrors({});
+
+        // Proceed with the update logic...
+
         // Prepare the data to be sent to Laravel
         const data = {
             name: productName,
@@ -63,10 +87,15 @@ const GoodsEdit = () => {
                         <input
                             type="text"
                             id="productName"
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-500"
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-500 ${
+                                errors.productName ? 'border-red-500' : ''
+                            }`}
                             value={productName}
                             onChange={(e) => setProductName(e.target.value)}
                         />
+                        {errors.productName && (
+                            <p className="text-red-500 text-sm mt-1">{errors.productName}</p>
+                        )}
                     </div>
                     <div className="mb-4">
                         <label htmlFor="productDescription" className="block text-gray-600 text-sm font-medium mb-2">
@@ -74,10 +103,15 @@ const GoodsEdit = () => {
                         </label>
                         <textarea
                             id="productDescription"
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-500"
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-500 ${
+                                errors.productDescription ? 'border-red-500' : ''
+                            }`}
                             value={productDescription}
                             onChange={(e) => setProductDescription(e.target.value)}
                         ></textarea>
+                        {errors.productDescription && (
+                            <p className="text-red-500 text-sm mt-1">{errors.productDescription}</p>
+                        )}
                     </div>
                     <div className="mb-4">
                         <label htmlFor="price" className="block text-gray-600 text-sm font-medium mb-2">
@@ -86,10 +120,13 @@ const GoodsEdit = () => {
                         <input
                             type="text"
                             id="price"
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-500"
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:border-green-500 ${
+                                errors.price ? 'border-red-500' : ''
+                            }`}
                             value={price}
                             onChange={(e) => setPrice(e.target.value)}
                         />
+                        {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
                     </div>
                     <button
                         type="button"

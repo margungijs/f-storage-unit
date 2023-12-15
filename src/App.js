@@ -1,6 +1,6 @@
 import './App.css';
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import {BrowserRouter as Router, Routes, Route, useLocation, Navigate} from "react-router-dom";
 import Login from "./components/Login.jsx";
 import InsertGoods from "./components/InsertGoods";
 import GoodsInfo from "./components/GoodsInfo";

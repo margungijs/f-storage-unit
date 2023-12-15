@@ -5,6 +5,7 @@ const Header = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const role = localStorage.getItem('role');
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -38,6 +39,7 @@ const Header = () => {
 
                 <div className="flex space-x-4 items-center">
                     {/* Burger menu icon for mobile */}
+                    {!token == '' &&
                     <button
                         className="lg:hidden"
                         onClick={handleToggleMobileMenu}
@@ -57,8 +59,10 @@ const Header = () => {
                             />
                         </svg>
                     </button>
+                    }
 
                     {/* Navigation links for desktop */}
+                    {!token == '' &&
                     <div className="hidden lg:flex space-x-4">
                         <button className="bg-white text-green-500 px-4 py-2 rounded-md hover:bg-green-600 hover:text-white transition duration-300">
                             <Link to="/goodsinfo">Products</Link>
@@ -66,10 +70,15 @@ const Header = () => {
                         <button className="bg-white text-green-500 px-4 py-2 rounded-md hover:bg-green-600 hover:text-white transition duration-300">
                             Ongoing shipments
                         </button>
-                        <button className="bg-white text-green-500 px-4 py-2 rounded-md hover:bg-green-600 hover:text-white transition duration-300">
-                            Change Password
-                        </button>
+                        {(role == 0 || role == 3) &&
+                            <button
+                                className=" bg-white text-green-500 px-4 py-2 rounded-md hover:bg-green-600 hover:text-white transition duration-300"
+                            >
+                                <Link to ="/UserOutput">Users</Link>
+                            </button>
+                        }
                     </div>
+                    }
 
                     {/* Burger menu for mobile */}
                     {isMobileMenuOpen && (
@@ -84,11 +93,13 @@ const Header = () => {
                             >
                                 Ongoing shipments
                             </button>
+                            {(role == 0 || role == 3) &&
                             <button
                                 className="block text-green-500 py-2 hover:text-green-600"
                             >
-                                Change Password
+                                <Link to ="/UserOutput">Users</Link>
                             </button>
+                            }
                             {token && (
                                 <button
                                     className="block text-green-500 py-2 hover:text-green-600"
