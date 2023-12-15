@@ -24,6 +24,8 @@ function App() {
     <Router>
       <Header />
       <Routes>
+        <Route path = "/Company" element = {<Company />}/>
+        <Route path = "/Tab" element = {<TabComponent />}/>
         <Route path = "/UserAdd" element = {<UserAdd />}/>
         <Route path = "/UserOutput" element = {<UserOutput />}/>
         <Route path = "/UserEdit" element = {<UserEdit />}/>
