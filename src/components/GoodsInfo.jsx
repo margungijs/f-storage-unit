@@ -14,19 +14,8 @@ const GoodsOutput = () => {
     const [imzis, setImzis] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const role = localStorage.getItem('role');
+    const [change, setChange] = useState(false);
 
-    useEffect(() => {
-        // Check if user is logged in when the component mounts
-        const token = localStorage.getItem('token');
-        setIsLoggedIn(!!token);
-
-        if (!token) {
-            // Redirect or handle unauthorized access
-            navigate('/');
-        } else {
-            fetchData(); // Fetch data only if logged in
-        }
-    }, [imzis, navigate]);
     const fetchData = async () => {
         try {
             const response = await axios.get('http://localhost/api/getProducts');
@@ -38,25 +27,27 @@ const GoodsOutput = () => {
         }
     };
 
-    const handleCategoryChange = async (goodId, category) => {
+    console.log(selectedProduct);
+
+    const handleCategoryChange = (goodId, category) => {
         setSelectedProduct({ id: goodId, category });
 
-        try {
-            const response = await fetch(`http://localhost/api/updateCategory/${selectedProduct.id}`, {
-                method: 'PUT',
+        if(selectedProduct.category !== null){
+            fetch(`http://localhost/api/updateCategory/${selectedProduct.id}`, {
+                method: "PUT",
                 headers: {
-                    'Content-Type': 'application/json', // or other content type as needed
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(selectedProduct),
-            });
-
-            const data = await response.json();
-            if(data.message){
-                setSelectedProduct({ id: null, category: null });
-            }
-            console.log('POST response:', data);
-        } catch (error) {
-            console.error('Error sending POST request:', error.message);
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    setImzis(!imzis);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         }
     };
 
@@ -75,7 +66,7 @@ const GoodsOutput = () => {
         };
 
         fetchData();
-    }, [selectedProduct ]);
+    }, [imzis]);
 
     const handleMoreInfo = (good) => {
         setSelectedGood(good);
@@ -244,24 +235,26 @@ const GoodsOutput = () => {
                                     ) : (
                                         <p className="text-red-500">Invalid price</p>
                                     )}
-                                    <div className="mt-4 mb-4">
-                                        <label className="block text-sm font-medium text-gray-700">Select Category:</label>
-                                        <select
-                                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                                            value={selectedProduct[good.id] || 'All'}
-                                            onChange={(e) => handleCategoryChange(good.id, e.target.value)}
-                                        >
-                                            <option value="All">All Categories</option>
-                                            <option value="Electronics and Gadgets">Electronics and Gadgets</option>
-                                            <option value="Apparel and Fashion">Apparel and Fashion</option>
-                                            <option value="Home and Kitchen">Home and Kitchen</option>
-                                            <option value="Beauty and Personal Care">Beauty and Personal Care</option>
-                                            <option value="Sports and Outdoors">Sports and Outdoors</option>
-                                            <option value="Books and Stationery">Books and Stationery</option>
-                                            <option value="Health and Wellness">Health and Wellness</option>
-                                            <option value="Toys and Games">Toys and Games</option>
-                                        </select>
-                                    </div>
+                                    {(role == 2 || role == 3) &&
+                                        <div className="mt-4 mb-4">
+                                            <label className="block text-sm font-medium text-gray-700">Select Category:</label>
+                                            <select
+                                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                                value={selectedProduct[good.id] || 'All'}
+                                                onChange={(e) => handleCategoryChange(good.id, e.target.value)}
+                                            >
+                                                <option value="All">All Categories</option>
+                                                <option value="Electronics and Gadgets">Electronics and Gadgets</option>
+                                                <option value="Apparel and Fashion">Apparel and Fashion</option>
+                                                <option value="Home and Kitchen">Home and Kitchen</option>
+                                                <option value="Beauty and Personal Care">Beauty and Personal Care</option>
+                                                <option value="Sports and Outdoors">Sports and Outdoors</option>
+                                                <option value="Books and Stationery">Books and Stationery</option>
+                                                <option value="Health and Wellness">Health and Wellness</option>
+                                                <option value="Toys and Games">Toys and Games</option>
+                                            </select>
+                                        </div>
+                                    }
                                     <button
                                         className="text-blue-500 hover:underline focus:outline-none"
                                         onClick={() => handleMoreInfo(good)}
