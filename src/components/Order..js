@@ -18,7 +18,13 @@ const Orders = () => {
                 }
 
                 const data = await response.json();
-                setOrders(data);
+                console.log('API Response:', data); // Log the data to see its structure
+
+                if (Array.isArray(data)) {
+                    setOrders(data);
+                } else {
+                    console.error('API response is not an array:', data);
+                }
             } catch (error) {
                 console.error('Error fetching orders:', error);
             }
